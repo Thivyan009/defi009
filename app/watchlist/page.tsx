@@ -15,22 +15,29 @@ import { ChainLogo } from "@/components/chain-logo"
 import { ThemeToggle } from '@/components/theme-toggle'
 
 export default function WatchlistPage() {
-  const { user } = useAuth()
+  const { user, isLoading: authLoading } = useAuth()
   const { watchlist, toggleWatchlist } = useWatchlist()
   const [isLoading, setIsLoading] = useState(true)
   const [watchlistItems, setWatchlistItems] = useState<YieldPool[]>([])
   const router = useRouter()
   const [sortColumn, setSortColumn] = useState("tvlUsd")
   const [sortDirection, setSortDirection] = useState("desc")
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    if (!user) {
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (!authLoading && !user) {
       router.push("/signin")
     }
-  }, [user, router])
+  }, [user, router, authLoading])
 
   useEffect(() => {
     const loadWatchlistData = async () => {
+      if (!mounted) return
+      
       if (watchlist.length === 0) {
         setWatchlistItems([])
         setIsLoading(false)
@@ -50,7 +57,17 @@ export default function WatchlistPage() {
     }
 
     loadWatchlistData()
-  }, [watchlist])
+  }, [watchlist, mounted])
+
+  if (!mounted || authLoading) {
+    return (
+      <div className="flex min-h-screen flex-col bg-[#f8fafc] dark:bg-[#0f172a]">
+        <div className="flex justify-center items-center h-screen">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      </div>
+    )
+  }
 
   if (!user) {
     return null // Will redirect in useEffect
