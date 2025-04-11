@@ -1,9 +1,7 @@
 import type React from "react"
 import "@/app/globals.css"
 import { Inter } from "next/font/google"
-import { ThemeProvider } from "@/components/theme-provider"
-import { AuthProvider } from "@/contexts/auth-context"
-import { WatchlistProvider } from "@/contexts/watchlist-context"
+import { Providers } from "@/components/providers"
 import Script from "next/script"
 
 const inter = Inter({ subsets: ["latin"] })
@@ -35,16 +33,7 @@ export default function RootLayout({
         </Script>
       </head>
       <body className={inter.className}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <AuthProvider>
-            <WatchlistProvider>{children}</WatchlistProvider>
-          </AuthProvider>
-        </ThemeProvider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   )
